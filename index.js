@@ -187,12 +187,16 @@ function animate(){
 
 
     if(keys.a.pressed && player.lastKey==='a'){
-        player.velocity.x = -5;
+        if(player.position.x>-10){
+            player.velocity.x = -5;
+        }
         player.switchSprite('run');
     }
     else if(keys.d.pressed && player.lastKey==='d'){
+        if(player.position.x<=canvas.width-player.width-5){
+            player.velocity.x = 5;
+        }
         player.switchSprite('run');
-        player.velocity.x = 5;
     }else{
         player.switchSprite('idle');
     }
@@ -207,11 +211,15 @@ function animate(){
 
     //enemy movement
     if(keys.ArrowLeft.pressed && enemy.lastKey==='ArrowLeft'){
-        enemy.velocity.x = +5;
+        if(enemy.position.x<=canvas.width-enemy.width-5-canvas.width){
+            enemy.velocity.x = +5;
+        }
         enemy.switchSprite('run');
     }
     else if(keys.ArrowRight.pressed && enemy.lastKey==='ArrowRight'){
-        enemy.velocity.x = -5;
+        if(enemy.position.x>-10-canvas.width){
+            enemy.velocity.x = -5;
+        }
         enemy.switchSprite('run');
     }else{
         enemy.switchSprite('idle');
@@ -219,7 +227,7 @@ function animate(){
 
     if(enemy.velocity.y<0){
         enemy.switchSprite('jump')
-     }else if(player.velocity.y>0){
+     }else if(enemy.velocity.y>0){
         enemy.switchSprite('fall')
      }
 
@@ -277,11 +285,13 @@ window.addEventListener('keydown',(event)=>{
                 player.lastKey = 'd';
                 break;
             case 'a':
-                keys.a.pressed=true;
-                player.lastKey = 'a';
+                    keys.a.pressed=true;
+                    player.lastKey = 'a';
                 break;
             case 'w':
-                player.velocity.y=-20;
+                if(player.velocity.y===0){
+                    player.velocity.y=-20;
+                }
                 break;
             case ' ':
                 player.attack();
@@ -299,7 +309,9 @@ window.addEventListener('keydown',(event)=>{
                 enemy.lastKey = 'ArrowLeft';
                 break;
             case 'ArrowUp':
-                enemy.velocity.y=-20;
+                if(enemy.velocity.y===0){
+                    enemy.velocity.y=-20;
+                }
                 break;
             case 'ArrowDown':
                 enemy.attack()

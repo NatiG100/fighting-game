@@ -4,6 +4,15 @@ const c = canvas.getContext('2d');
 canvas.width = 1024;
 canvas.height = 576;
 
+var audio = new Audio('./sounds/background.mp3');
+var enemyHitSound = new Audio('./sounds/enemyHit.mp3');
+var playerHitSound = new Audio('./sounds/playerHit.mp3');
+var enemyPainSound = new Audio('./sounds/enemyPain.wav');
+var playerPainSound = new Audio('./sounds/playerPain.wav');
+var swordMissSound = new Audio('./sounds/swordMiss.wav');
+
+audio.volume = 0.4;
+
 c.fillRect(0,0,canvas.width,canvas.height,);
 
 const gravity = 0.7;
@@ -239,12 +248,25 @@ function animate(){
             rectangle2:enemy,
         })&&
         player.isAttacking&&player.currentFrame === 4
+        &&!enemy.dead
     ){
+        enemyHitSound.pause();
+        enemyHitSound.currentTime = 0;
             enemy.takeHit();
+
+            enemyPainSound.pause();
+            enemyPainSound.currentTime = 0;
+            enemyPainSound.play();
+
+            enemyHitSound.play();
             player.isAttacking = false;
             gsap.to('#enemyHealth',{
                 width:enemy.health +'%'
             })
+    }else if(player.isAttacking&&player.currentFrame === 4){
+        swordMissSound.pause();
+        swordMissSound.currentTime = 0;
+        swordMissSound.play();
     }
 
     //if player misses
@@ -257,12 +279,25 @@ function animate(){
             rectangle2:player,
         })&&
         enemy.isAttacking&&enemy.currentFrame===2
+        &&!player.dead
     ){
             player.takeHit();
+            playerPainSound.pause();
+            playerPainSound.currentTime = 0;
+            playerPainSound.play();
+
+
+            playerHitSound.pause();
+            playerHitSound.currentTime = 0;
+            playerHitSound.play();
             enemy.isAttacking = false;
             gsap.to('#playerHealth',{
                 width:player.health +'%'
             })
+    }else if(enemy.isAttacking&&enemy.currentFrame===2){
+        swordMissSound.pause();
+        swordMissSound.currentTime = 0;
+        swordMissSound.play();
     }
     //if eney misses
     if(enemy.isAttacking&&enemy.currentFrame===2){
@@ -278,6 +313,7 @@ function animate(){
 animate();
 
 window.addEventListener('keydown',(event)=>{
+    audio.play();
     if(!player.dead){
         switch(event.key){
             case 'd':
